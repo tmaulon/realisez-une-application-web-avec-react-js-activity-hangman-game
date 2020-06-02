@@ -122,11 +122,12 @@ const App = () => {
 				</div>
 			</StyledSection>
 			<section>
-				{lettersAttempt.map((l, index) => (
-					<div key={index}>
-						<p>{l}</p>
-					</div>
-				))}
+				<p>Lettres temptées : </p>
+				<div>
+					{lettersAttempt.map((l, index) => (
+						<p key={index}>{l}</p>
+					))}
+				</div>
 			</section>
 			<StyledSection>
 				<button onClick={() => initializeGame()}>Start new game</button>
