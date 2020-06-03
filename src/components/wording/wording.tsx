@@ -1,20 +1,20 @@
-import React, { useState } from "react";
+import React from "react";
 import styled from "styled-components";
-type TFeedBack = "hidden" | "visible";
+
 export const Wording: React.FC<{
-	feedback: TFeedBack;
-	wording: string[];
-}> = ({ wording, feedback }) => {
-	return (
-		<WordingWrapper>
-			<p>
-				{wording.map((letter, index) => (
-					<Letter key={index}>{feedback === "visible" ? letter : "_"}</Letter>
-				))}
-			</p>
-		</WordingWrapper>
-	);
-};
+	word: string[];
+	lettersMatched: string[];
+}> = ({ word, lettersMatched }) => (
+	<WordingWrapper>
+		<p>
+			{word.map((letter, index) => (
+				<Letter key={index}>
+					{lettersMatched.includes(letter) ? letter : "_"}
+				</Letter>
+			))}
+		</p>
+	</WordingWrapper>
+);
 
 const WordingWrapper = styled.div`
 	display: flex;

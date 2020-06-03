@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Header } from "./components/header/header";
 import shuffle from "lodash.shuffle";
+import { Wording } from "./components/wording/wording";
+import { AlphabetLetterBoard } from "./components/alphabet-letters-board/alphabet-letters-board";
 
 const WORDS = ["test", "ok"];
 const ALPHABET = "abcdefghijklmnopqrstuvwxyz".split("");
@@ -25,13 +27,13 @@ const App = () => {
 	};
 
 	useEffect(() => {
-		initializeGame();
+		const newWord = generateWord()[0].split("");
+		setWord(newWord);
 	}, []);
 
 	/**
 	 *
 	 * Logic
-	 * @param selectedLetter
 	 */
 	const checkGameState = (attempts: number, score: number) =>
 		attempts < 6 ? (
@@ -80,55 +82,39 @@ const App = () => {
 		}
 	};
 
-	const won = lettersMatched.length === word.length;
+	const wonGame = lettersMatched.length === word.length;
 
-	const loose = attempts === 6;
-
-	const setSymbol = (letter: string, lettersMatched: string[]) => {
-		return lettersMatched.includes(letter) ? letter : "_";
-	};
+	const lostGame = attempts === 6;
 
 	return (
 		<AppWrapper>
 			<Header />
 			<StyledSection>{checkGameState(attempts, score)}</StyledSection>
-			{won && (
+			{wonGame && (
 				<StyledSection>
 					<p>Gagné</p>
 				</StyledSection>
 			)}
 			<StyledSection>
-				<WordingWrapper>
-					<p>
-						{word.map((letter, index) => (
-							<Letter key={index}>{setSymbol(letter, lettersMatched)}</Letter>
-						))}
-					</p>
-				</WordingWrapper>
+				<Wording lettersMatched={lettersMatched} word={word} />
 			</StyledSection>
 			<StyledSection>
-				<div>
-					{ALPHABET.map((letter, index) => (
-						<Button
-							key={index}
-							onClick={() => setLetterMatchedOrNot(letter)}
-							disabled={loose || won}
-							matched={lettersMatched.includes(letter)}
-							won={won}
-						>
-							{letter}
-						</Button>
-					))}
-				</div>
+				<AlphabetLetterBoard
+					letters={ALPHABET}
+					onClick={setLetterMatchedOrNot}
+					lostGame={lostGame}
+					wonGame={wonGame}
+					lettersMatched={lettersMatched}
+				/>
 			</StyledSection>
-			<section>
+			<StyledSection>
 				<p>Lettres temptées : </p>
-				<div>
+				<LettersAttemptList>
 					{lettersAttempt.map((l, index) => (
 						<p key={index}>{l}</p>
 					))}
-				</div>
-			</section>
+				</LettersAttemptList>
+			</StyledSection>
 			<StyledSection>
 				<button onClick={() => initializeGame()}>Start new game</button>
 			</StyledSection>
@@ -145,46 +131,12 @@ const AppWrapper = styled.div`
 	font-family: "Montserrat", Arial, Helvetica, sans-serif;
 `;
 const StyledSection = styled.section`
-	margin-top: 5rem;
+	margin-top: 2rem;
 `;
-const WordingWrapper = styled.div`
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	width: 100%;
-`;
-const Letter = styled.span`
-	color: #060606;
-	font-size: 4rem;
-	&:not(:last-of-type) {
-		margin-right: 1.5rem;
-	}
-`;
-const Button = styled.button<{ matched: boolean; won: boolean }>`
-	border: none;
-	outline: none;
-	box-shadow: none;
-	background: none;
-	padding: 10px;
-	font-size: 1.2rem;
-	background-color: ${({ matched }) => (matched ? "green" : "#fff")};
-	border: ${({ matched }) =>
-		matched ? "1px solid green" : "1px solid #0000ff"};
-	color: ${({ matched }) => (matched ? "#fff" : "#0000ff")};
-	transition: background-color.3s ease-out, border 0.3s ease-out,
-		color 0.3s ease-out;
-	&:hover,
-	&:focus,
-	&:focus-within {
-		background-color: #0000ff;
-		border: 1px solid #0000ff;
-		color: #fff;
-		cursor: pointer;
-	}
-	&:disabled {
-		background-color: ${({ won }) => (won ? "" : "red")};
-		border: ${({ won }) => (won ? "" : "1px solid red")};
-		color: ${({ won }) => (won ? "" : "#fff")};
-		cursor: not-allowed;
-	}
+const LettersAttemptList = styled.div`
+	display: grid;
+	grid-auto-rows: 1fr;
+	grid-template-columns: repeat(9, 1fr);
+	grid-template-rows: repeat(3, 1fr);
+	grid-gap: 1rem;
 `;
